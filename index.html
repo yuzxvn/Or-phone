@@ -3459,7 +3459,7 @@ function showMessages(app, conv){
       const nx = $("#app .smin input"); if(nx) nx.focus();
       autoReply(app.name, conv.name);
       if(conv.name === "픽시") pixiLove(app, conv, t);
-      if(conv.name === "디온") dionLove(app, conv, t);
+      /* 디온 자동답장("?") 제거 */
       if(conv.name === "디온" && !window._callPendD && dionYes(t)){ window._callPendD = true; }
       if(conv.name === "디온" && window._dionLoved && window._callPendD && !window._dionNoMore){ window._dionNoMore = true; showMessages(app, conv); }
     };
