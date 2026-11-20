@@ -3412,7 +3412,7 @@ function showMessages(app, conv){
   } else {
     conv.unread = false; if(conv._n0 == null) conv._n0 = conv.messages.length;
     if(conv.name === "픽시" && !window._pxChat){ window._pxChat = true; const _full = (conv.auto || []).slice();
-      _full.forEach((m,k) => setTimeout(() => { conv.messages.push(m); conv.time = "오후 11:27"; if(scr.dataset.s === "app" && curApp === "메시지" && msConv === conv) showMessages(app, conv); }, [1200, 4000, 6200][k] || 1200 + k*2500)); }
+      _full.forEach((m,k) => setTimeout(() => { conv.messages.push(m); conv.time = "오후 11:28"; if(scr.dataset.s === "app" && curApp === "메시지" && msConv === conv) showMessages(app, conv); }, [1200, 4000, 6200][k] || 1200 + k*2500)); }
     const ms = conv.messages; let lastI = -1; ms.forEach((m,i) => { if(m[0] === "me" || m[0] === "them" || m[0] === "img") lastI = i; });
     const cT = conv.time === "지금" ? t12(CONFIG.clock || new Date().toTimeString().slice(0,5)) : (/오[전후]/.test(conv.time||"") ? conv.time : "");
     const body = ms.map((m,i) => {
@@ -3438,14 +3438,14 @@ function showMessages(app, conv){
     h = `<div class="sm"><div class="smtp"><button class="smbk">${SMI.bk}</button><div class="smav">${conv.name[0]}<i></i></div><b class="smn">${conv.name}${SMI.dn}</b><span class="smk">${SMI.dots}</span></div><div class="smth">${body}</div><div class="smbt"><span>${SMI.gal}</span><span>${SMI.cam}</span><span>${SMI.plus}</span><div class="smin"><input type="text" placeholder="" enterkeyhint="send" autocomplete="off"><span class="smsk">${SMI.sk}</span></div><span class="smwv">${SMI.wv}</span><button class="smsnd">${SMI.snd}</button></div></div>`;
   }
   const el = $("#app"); el.innerHTML = h;
-  el.querySelectorAll(".row, .gmr").forEach(r => r.onclick = () => showMessages(app, cs[+r.dataset.i]));
+  el.querySelectorAll(".row, .gmr").forEach(r => r.onclick = () => { window._smKb = false; try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){} showMessages(app, cs[+r.dataset.i]); });
   { const gx = el.querySelector("#gmx"); if(gx) gx.onclick = () => { el.querySelector("#gmb").remove(); el.querySelector("#gmd").remove(); }; el.querySelectorAll(".gmt").forEach(t => t.onclick = () => { el.querySelectorAll(".gmt").forEach(o => o.classList.remove("on")); t.classList.add("on"); }); }
   const bk = el.querySelector(".smbk"); if(bk) bk.onclick = () => showMessages(app, null);
   const th = el.querySelector(".smth"); if(th) th.scrollTop = th.scrollHeight; if(th) th.querySelectorAll(".smi img").forEach(i => i.onload = () => { th.scrollTop = th.scrollHeight; });
   const ip = el.querySelector(".smin input");
   if(ip){
     const box = ip.parentNode;
-    const lockD = (conv.name === "픽시" && !window._pixiOpen) || (conv.name === "디온" && (window._dionLocked || window._dionNoMore));
+    const lockD = !!conv._lock || (conv.name === "픽시" && !window._pixiOpen) || (conv.name === "디온" && (window._dionLocked || window._dionNoMore));
     if(lockD){ ip.disabled = true; box.style.opacity = ".55"; }
     const send = () => {
       if(lockD) return;
@@ -5590,7 +5590,7 @@ function cmqClose(){ const m = document.getElementById("cmq"); if(m) m.classList
 function cmqOpen(){ let m = document.getElementById("cmq");
   if(!m){ m = document.createElement("div"); m.id = "cmq"; scr.appendChild(m); m.onclick = e => { if(e.target === m) cmqClose(); }; }
   m.innerHTML = `<div class="cmqs"><div class="cmqt">메시지 보내기</div>${CMQ.map(t => `<div class="cmqi">${t}</div>`).join("")}<div class="cmqr"><input id="cmqin" placeholder="직접 입력" inputmode="none"><button id="cmqsd">전송</button></div><div class="cmqk" id="cmqk"></div></div>`;
-  const done = txt => { try{ const a = find("메시지"), cs = a.screen.conversations; let i = cs.findIndex(c => c.name === CALL.name); const c = i < 0 ? {name:CALL.name, messages:[]} : cs.splice(i,1)[0]; c.messages.push(["me", txt]); c.time = "지금"; c.unread = false; cs.unshift(c); }catch(_){} cmqClose(); callHide(); };
+  const done = txt => { try{ const a = find("메시지"), cs = a.screen.conversations; let i = cs.findIndex(c => c.name === CALL.name); const c = i < 0 ? {name:CALL.name, messages:[]} : cs.splice(i,1)[0]; c.messages.push(["me", txt]); c.time = "지금"; c.unread = false; c._lock = true; cs.unshift(c); }catch(_){} window._smKb = false; try{ const _k = document.querySelector("#app .sm.kb"); if(_k){ _k.classList.remove("kb"); const _h = _k.querySelector(".sm-hk"); if(_h) _h.remove(); } if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){} cmqClose(); callHide(); };
   m.querySelectorAll(".cmqi").forEach(el => el.onclick = () => done(el.textContent));
   m.querySelector("#cmqsd").onclick = () => { const v = m.querySelector("#cmqin").value.trim(); if(v) done(v); };
   const ip = m.querySelector("#cmqin"), kk = m.querySelector("#cmqk"), st = kbMake(ip); kk._kb = st; m.classList.remove("cmqkb");
