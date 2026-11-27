@@ -3335,24 +3335,11 @@ const CONFIG = {
       "*":["ㅋㅋㅋㅋ","응응","ㅇㅋㅇㅋ","그래!","뭐해?","헐"]
     }
   },
-  testDate: "",             // 미리보기 테스트용. 평소엔 비워두기! (확인할 땐 "2026-11-28" 처럼 적기)
-  lockPreview: [              // 잠금화면에 이미 와 있는 알림. onlyOn 날짜(기기 날짜 기준)에만 나타나고, 다른 날엔 없어요
-    { onlyOn:"2026-11-28", app:"메시지", title:"픽시", body:"오르야 생일 축하해 ♡ 오늘도 좋은 하루 보내고, 언제나 사랑해 행복한 날 보내!", time:"1분 전" },
-    { onlyOn:"2026-11-28", app:"카카오톡", title:"PJX", who:"디온", body:"디온 : 오르야 생일 축하해!!!", msg:"오르야 생일 축하해!!!", date:"2026년 11월 28일 토요일", ts:"오후 11:25", time:"2분 전" },
-    { onlyOn:"2026-11-28", app:"카카오톡", title:"PJX", who:"제인", body:"제인 : 오르 생일 축하해~", msg:"오르 생일 축하해~", ts:"오후 11:26", time:"1분 전" },
-    { onlyOn:"2026-11-28", app:"카카오톡", title:"PJX", who:"유람", body:"유람 : 오르 생축~", msg:"오르 생축~", ts:"오후 11:27", time:"지금" }
-  ],
+  lockPreview: [],
   notifications: [            // 잠금 해제한 뒤 at초 후에 "띠링" 하고 도착하는 알림 (지금은 없음)
   ]
 };
 /* ============================================ */
-
-/* 날짜 한정 알림: 알림에 onlyOn:"2026-11-28" 이 붙어 있으면 그 날에만 살아있고,
-   다른 날(예: 29일)에는 통째로 사라져요 → 잠금화면에도, 문자/카톡 앱 안에도 안 나와요. */
-const TODAY_KEY = CONFIG.testDate || (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)(new Date());
-const isLiveNoti = n => !n.onlyOn || [].concat(n.onlyOn).includes(TODAY_KEY);
-CONFIG.lockPreview = (CONFIG.lockPreview || []).filter(isLiveNoti);
-CONFIG.notifications = (CONFIG.notifications || []).filter(isLiveNoti);
 
 /* PJX 단톡방: 마지막 두 개(유람 카톡 + 이모티콘) 말고는 모두 읽은 걸로 */
 (() => { try{ const kk = CONFIG.apps.concat(CONFIG.dock).find(a => a.name === "카카오톡"), pj = kk.screen.chats.find(c => c.name === "PJX"); const ms = pj.messages, ix = []; ms.forEach((m,i) => { if(m[0] !== "date") ix.push(i); }); const keep = new Set(ix.slice(-2)); ms.forEach((m,i) => { if(m[0] !== "date" && !keep.has(i) && typeof m[3] === "number") m[3] = 0; }); }catch(_){} })();
@@ -5516,8 +5503,6 @@ function deliver(n){
   }
 }
 $("#stack").innerHTML = (CONFIG.lockPreview || []).map(nt).join("");
-/* 잠금화면에 떠 있는 알림은 앱을 열었을 때도 들어있게 (배지 + 문자/카톡 내용). 날짜 필터를 통과한 것만 */
-try{ (CONFIG.lockPreview || []).forEach(n => { badge[n.app] = (badge[n.app] || 0) + 1; msDeliver(n); kDeliver(n); }); }catch(_){}
 let notiStarted = false;
 function startNoti(){
   if(notiStarted) return; notiStarted = true;
