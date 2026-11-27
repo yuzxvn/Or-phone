@@ -5503,6 +5503,18 @@ function deliver(n){
   }
 }
 $("#stack").innerHTML = (CONFIG.lockPreview || []).map(nt).join("");
+/* 11/28(오르 생일) 당일에만: 잠금화면 미리보기 + 실제 메시지/카톡 도착. 다른 날짜에는 아무것도 없음 */
+const BDAY = [   // 도착 순서(위가 먼저). 잠금화면에는 최신이 맨 위
+  {app:"메시지", title:"픽시", body:"오르야 생일 축하해 ♡ 오늘 좋은 하루 보내고, 언제나 사랑해 행복한 날 보내!", time:"지금"},
+  {app:"카카오톡", title:"PJX", who:"디온", date:"2026년 11월 28일 토요일", msg:"오르야 생일 축하해~~!!!!!!!!!!!!!", body:"디온 : 오르야 생일 축하해~~!!!!!!!!!!!!!", time:"지금", ts:"오후 11:28"},
+  {app:"카카오톡", title:"PJX", who:"제인", msg:"오르 생일 축하해~", body:"제인 : 오르 생일 축하해~", time:"지금", ts:"오후 11:28"},
+  {app:"카카오톡", title:"PJX", who:"유람", msg:"오르 생축~", body:"유람 : 오르 생축~", time:"지금", ts:"오후 11:28"}
+];
+(() => { try{ const d = new Date(); if(!(d.getFullYear() === 2026 && d.getMonth() === 10 && d.getDate() === 28)) return;
+  BDAY.forEach(n => { msDeliver(n); kDeliver(n); badge[n.app] = (badge[n.app] || 0) + 1; });
+  drawBadges();
+  $("#stack").innerHTML = BDAY.slice().reverse().map(nt).join("");
+}catch(e){ console.error(e); } })();
 let notiStarted = false;
 function startNoti(){
   if(notiStarted) return; notiStarted = true;
